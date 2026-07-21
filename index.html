@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lumiel INFJ diary</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F6EFE4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kaisei+Decol&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6EFE4;
+    --paper: #FFFDF8;
+    --ink: #4A4038;
+    --ink-soft: #8A7F72;
+    --line: #E4D9C8;
+    --accent: #C98A6B;
+    --accent-soft: #F0DCC9;
+    --shadow: 0 2px 10px rgba(120, 95, 60, 0.08);
+    font-size: 16px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(255,255,255,0.6), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(255,255,255,0.4), transparent 40%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 84px;
+  }
+  header {
+    padding: 22px 20px 10px;
+    text-align: center;
+  }
+  header h1 {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 1.5rem;
+    margin: 0;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+  }
+  header p { margin: 4px 0 0; font-size: 0.75rem; color: var(--ink-soft); }
+
+  .washi {
+    display: inline-block;
+    background: var(--accent-soft);
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    color: var(--accent);
+    transform: rotate(-1deg);
+    margin-bottom: 4px;
+  }
+
+  main { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* Fluffy double-border card */
+  .fluffy {
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    position: relative;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .fluffy::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--accent-soft);
+    border-radius: 14px;
+    pointer-events: none;
+  }
+
+  /* Calendar */
+  .cal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .cal-head button {
+    background: none; border: none; font-size: 1.2rem; color: var(--accent);
+    cursor: pointer; padding: 6px 12px;
+  }
+  .cal-head .ym { font-weight: 700; font-size: 1.05rem; }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  }
+  .cal-dow { text-align: center; font-size: 0.7rem; color: var(--ink-soft); padding-bottom: 4px; }
+  .cal-cell {
+    aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start; padding-top: 4px;
+    font-size: 0.8rem; cursor: pointer; position: relative; background: #FBF7EF;
+    border: 1px solid transparent;
+  }
+  .cal-cell.today { border-color: var(--accent); font-weight: 700; }
+  .cal-cell.empty { background: none; cursor: default; }
+  .cal-dots { display: flex; gap: 2px; margin-top: 3px; flex-wrap: wrap; justify-content: center; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* Tabs */
+  nav.tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--paper); border-top: 1px solid var(--line);
+    display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 20;
+  }
+  nav.tabbar button {
+    flex: 1; background: none; border: none; font-family: inherit;
+    font-size: 0.72rem; color: var(--ink-soft); display: flex; flex-direction: column;
+    align-items: center; gap: 2px; cursor: pointer;
+  }
+  nav.tabbar button .icon { font-size: 1.2rem; }
+  nav.tabbar button.active { color: var(--accent); font-weight: 700; }
+
+  .page { display: none; padding-top: 14px; }
+  .page.active { display: block; }
+
+  .event-row {
+    display: flex; align-items: center; gap: 8px; padding: 8px 4px;
+    border-bottom: 1px dashed var(--line);
+    font-size: 0.85rem;
+  }
+  .event-row:last-child { border-bottom: none; }
+  .cat-chip {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .event-title { flex: 1; }
+  .event-date { color: var(--ink-soft); font-size: 0.72rem; }
+
+  input, textarea, select {
+    font-family: inherit; font-size: 0.9rem; width: 100%;
+    padding: 9px 10px; border: 1px solid var(--line); border-radius: 10px;
+    background: #FFFEFB; color: var(--ink); margin-bottom: 8px;
+  }
+  label { font-size: 0.72rem; color: var(--ink-soft); display: block; margin-bottom: 2px; }
+  .btn {
+    display: inline-block; background: var(--accent); color: white; border: none;
+    padding: 10px 20px; border-radius: 20px; font-family: inherit; font-weight: 700;
+    font-size: 0.85rem; cursor: pointer;
+  }
+  .btn.ghost { background: none; color: var(--accent); border: 1px solid var(--accent-soft); }
+  .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+
+  .fab {
+    position: fixed; bottom: 90px; right: 20px; width: 54px; height: 54px;
+    border-radius: 50%; background: var(--accent); color: white; border: none;
+    font-size: 1.6rem; box-shadow: 0 4px 14px rgba(180,120,80,0.4); z-index: 15; cursor: pointer;
+  }
+
+  .sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(60,45,30,0.35); z-index: 30;
+    display: none; align-items: flex-end;
+  }
+  .sheet-backdrop.show { display: flex; }
+  .sheet {
+    background: var(--bg); width: 100%; max-height: 86vh; overflow-y: auto;
+    border-radius: 22px 22px 0 0; padding: 18px 18px calc(20px + env(safe-area-inset-bottom));
+    animation: up 0.22s ease;
+  }
+  @keyframes up { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .sheet h2 { margin: 0 0 12px; font-size: 1.05rem; font-family: 'Kaisei Decol', serif; }
+  .sheet-close {
+    display: block; margin: 0 auto 6px; width: 36px; height: 4px; border-radius: 2px;
+    background: var(--line); border: none;
+  }
+
+  .diary-mood-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .mood-btn {
+    padding: 6px 12px; border-radius: 14px; border: 1px solid var(--line);
+    background: #FFFEFB; font-size: 0.78rem; cursor: pointer;
+  }
+  .mood-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .search-box { margin-bottom: 10px; }
+  .empty-msg { text-align: center; color: var(--ink-soft); font-size: 0.82rem; padding: 20px 0; }
+  .loading { text-align: center; color: var(--ink-soft); padding: 40px 0; font-size: 0.85rem; }
+
+  .cat-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; font-size: 0.7rem; color: var(--ink-soft); }
+  .cat-legend span { display: flex; align-items: center; gap: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="washi">こころ、記録する</div>
+  <h1>Lumiel INFJ diary</h1>
+  <p id="sync-status">読み込み中…</p>
+</header>
+
+<main>
+  <!-- 今日 -->
+  <section class="page" id="page-today">
+    <div class="fluffy" id="today-card">
+      <div class="loading">読み込み中…</div>
+    </div>
+  </section>
+
+  <!-- 予定（カレンダー） -->
+  <section class="page active" id="page-calendar">
+    <div class="fluffy">
+      <div class="cal-head">
+        <button onclick="changeMonth(-1)">‹</button>
+        <div class="ym" id="cal-ym"></div>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cat-legend" id="cat-legend"></div>
+    </div>
+
+    <div class="fluffy">
+      <input type="text" class="search-box" id="search-input" placeholder="🔍 予定を検索">
+      <div id="event-list"><div class="loading">読み込み中…</div></div>
+    </div>
+  </section>
+
+  <!-- きもち（日記） -->
+  <section class="page" id="page-diary">
+    <div class="fluffy" id="diary-list"><div class="loading">読み込み中…</div></div>
+  </section>
+</main>
+
+<button class="fab" id="fab" onclick="openAddSheet()">＋</button>
+
+<nav class="tabbar">
+  <button class="tab-btn" data-page="today" onclick="showPage('today')"><span class="icon">☀️</span>今日</button>
+  <button class="tab-btn active" data-page="calendar" onclick="showPage('calendar')"><span class="icon">📅</span>予定</button>
+  <button class="tab-btn" data-page="diary" onclick="showPage('diary')"><span class="icon">💭</span>きもち</button>
+</nav>
+
+<!-- 予定追加/編集シート -->
+<div class="sheet-backdrop" id="event-sheet-backdrop">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheets()"></button>
+    <h2 id="event-sheet-title">予定を追加</h2>
+    <input type="hidden" id="ev-id">
+    <label>タイトル</label>
+    <input type="text" id="ev-title" placeholder="例：ループ会">
+    <label>日付</label>
+    <input type="date" id="ev-date">
+    <label>カテゴリ</label>
+    <select id="ev-category"></select>
+    <label>繰り返し</label>
+    <select id="ev-recurrence">
+      <option value="繰り返しなし">繰り返しなし</option>
+      <option value="毎日">毎日</option>
+      <option value="毎週">毎週</option>
+      <option value="毎月">毎月</option>
+      <option value="毎年">毎年</option>
+    </select>
+    <div class="btn-row">
+      <button class="btn ghost" id="ev-delete-btn" onclick="deleteEvent()" style="display:none;">削除</button>
+      <button class="btn ghost" onclick="closeSheets()">キャンセル</button>
+      <button class="btn" onclick="saveEvent()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 日記追加/編集シート -->
+<div class="sheet-backdrop" id="diary-sheet-backdrop">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheets()"></button>
+    <h2>今日のきもち</h2>
+    <input type="hidden" id="di-id">
+    <label>気分</label>
+    <div class="diary-mood-row" id="mood-picker"></div>
+    <label>エネルギー（1〜5）</label>
+    <input type="range" id="di-energy" min="1" max="5" value="3">
+    <label>今日あったこと・思ったこと</label>
+    <textarea id="di-text" rows="4" placeholder="自由に書いてね"></textarea>
+    <label>今日のできたこと</label>
+    <input type="text" id="di-todaywin">
+    <label>やり残したこと</label>
+    <input type="text" id="di-unfinished">
+    <div class="btn-row">
+      <button class="btn ghost" onclick="closeSheets()">キャンセル</button>
+      <button class="btn" onclick="saveDiary()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="day-sheet-backdrop">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheets()"></button>
+    <h2 id="day-sheet-title"></h2>
+    <div id="day-sheet-content"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="openAddSheet()">＋ 予定を追加</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   設定：ここにApps ScriptのWebアプリURLを貼り付けてください
+   ============================================================ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwPKwSkUAQ8lisadGJBEoh2izBfDviWhv69UwoXd5qtf8m5m9Tbu_RltyAFUAA20FE/exec';
+
+const MOODS = ['穏やか','元気','つかれた','かなしい','いらいら','ふあん'];
+
+let state = { categories: [], events: [], diary: [] };
+let calYear, calMonth; // calMonth: 0-11
+let selectedDayStr = null;
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+async function loadAll() {
+  document.getElementById('sync-status').textContent = '読み込み中…';
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    state = data;
+    document.getElementById('sync-status').textContent = '同期済み ✓';
+    renderAll();
+  } catch (err) {
+    document.getElementById('sync-status').textContent = '⚠️ 接続できませんでした。API_URLを確認してね';
+    console.error(err);
+  }
+}
+
+async function apiPost(sheet, action, data) {
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ sheet, action, data }),
+  });
+}
+
+function catColor(name) {
+  const c = state.categories.find(c => c.name === name);
+  return c ? '#' + c.colorHex : '#8E8E93';
+}
+
+/* ---------- 繰り返し予定を展開して「その月に表示すべき予定」を返す ---------- */
+function expandForMonth(year, month) {
+  // month: 0-11
+  const results = [];
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  state.events.forEach(ev => {
+    const base = new Date(ev.date + 'T00:00:00');
+    if (isNaN(base)) return;
+    if (ev.recurrence === '繰り返しなし') {
+      if (base >= first && base <= last) results.push({ ...ev, occDate: ev.date });
+      return;
+    }
+    if (ev.recurrence === '毎年') {
+      const occ = new Date(year, base.getMonth(), base.getDate());
+      if (occ.getMonth() === month && occ >= base) {
+        results.push({ ...ev, occDate: fmtDate(occ) });
+      }
+      return;
+    }
+    if (ev.recurrence === '毎月') {
+      if (base <= last) {
+        const occ = new Date(year, month, base.getDate());
+        if (occ.getMonth() === month) results.push({ ...ev, occDate: fmtDate(occ) });
+      }
+      return;
+    }
+    if (ev.recurrence === '毎週') {
+      if (base <= last) {
+        let d = new Date(base);
+        while (d < first) d.setDate(d.getDate() + 7);
+        while (d <= last) {
+          if (d.getMonth() === month) results.push({ ...ev, occDate: fmtDate(d) });
+          d.setDate(d.getDate() + 7);
+        }
+      }
+      return;
+    }
+    if (ev.recurrence === '毎日') {
+      let d = new Date(Math.max(base, first));
+      while (d <= last) {
+        results.push({ ...ev, occDate: fmtDate(d) });
+        d.setDate(d.getDate() + 1);
+      }
+    }
+  });
+  return results;
+}
+function fmtDate(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+/* ---------- カレンダー描画 ---------- */
+function renderCalendar() {
+  document.getElementById('cal-ym').textContent = `${calYear}年 ${calMonth+1}月`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  ['日','月','火','水','木','金','土'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d;
+    grid.appendChild(el);
+  });
+  const first = new Date(calYear, calMonth, 1);
+  const startOffset = first.getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const monthEvents = expandForMonth(calYear, calMonth);
+  const byDay = {};
+  monthEvents.forEach(e => { (byDay[e.occDate] = byDay[e.occDate] || []).push(e); });
+
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div'); el.className = 'cal-cell empty';
+    grid.appendChild(el);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-cell' + (dateStr === todayStr() ? ' today' : '');
+    el.innerHTML = `<div>${d}</div>`;
+    const dots = document.createElement('div'); dots.className = 'cal-dots';
+    (byDay[dateStr] || []).slice(0,4).forEach(e => {
+      const dot = document.createElement('div'); dot.className = 'dot';
+      dot.style.background = catColor(e.categoryName);
+      dots.appendChild(dot);
+    });
+    el.appendChild(dots);
+    el.onclick = () => openDaySheet(dateStr, byDay[dateStr] || []);
+    grid.appendChild(el);
+  }
+
+  const legend = document.getElementById('cat-legend');
+  legend.innerHTML = state.categories.map(c =>
+    `<span><span class="dot" style="background:#${c.colorHex}"></span>${c.name}</span>`
+  ).join('');
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+/* ---------- 予定一覧（検索） ---------- */
+function renderEventList(filter = '') {
+  const list = document.getElementById('event-list');
+  const upcoming = expandForMonth(calYear, calMonth)
+    .concat(expandForMonth(calYear, calMonth+1 > 11 ? 0 : calMonth+1))
+    .filter(e => !filter || e.title.includes(filter))
+    .sort((a,b) => a.occDate.localeCompare(b.occDate));
+  if (!upcoming.length) {
+    list.innerHTML = '<div class="empty-msg">予定はまだないよ</div>';
+    return;
+  }
+  list.innerHTML = upcoming.map(e => `
+    <div class="event-row">
+      <div class="cat-chip" style="background:${catColor(e.categoryName)}"></div>
+      <div class="event-title">${escapeHtml(e.title)}</div>
+      <div class="event-date">${e.occDate}</div>
+    </div>
+  `).join('');
+}
+
+/* ---------- 今日タブ ---------- */
+function renderToday() {
+  const t = todayStr();
+  const todays = expandForMonth(calYear, calMonth).filter(e => e.occDate === t);
+  const card = document.getElementById('today-card');
+  card.innerHTML = `
+    <h2 style="font-family:'Kaisei Decol',serif;margin-top:0;">${t}</h2>
+    ${todays.length ? todays.map(e => `
+      <div class="event-row">
+        <div class="cat-chip" style="background:${catColor(e.categoryName)}"></div>
+        <div class="event-title">${escapeHtml(e.title)}</div>
+      </div>`).join('') : '<div class="empty-msg">今日の予定はないよ</div>'}
+  `;
+}
+
+/* ---------- 日記タブ ---------- */
+function renderDiary() {
+  const list = document.getElementById('diary-list');
+  const sorted = [...state.diary].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  if (!sorted.length) {
+    list.innerHTML = '<div class="empty-msg">まだ記録がないよ。＋ボタンから書いてみてね</div>';
+    return;
+  }
+  list.innerHTML = sorted.map(d => `
+    <div style="border-bottom:1px dashed var(--line);padding:10px 0;">
+      <div style="font-size:0.7rem;color:var(--ink-soft);">${d.date} ・ ${escapeHtml(d.mood||'')} ・ energy ${d.energy||''}</div>
+      <div style="font-size:0.85rem;margin-top:4px;white-space:pre-wrap;">${escapeHtml(d.text||'')}</div>
+      ${d.todayWin ? `<div style="font-size:0.78rem;color:var(--accent);margin-top:4px;">✅ ${escapeHtml(d.todayWin)}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderAll() {
+  renderCalendar();
+  renderEventList(document.getElementById('search-input').value);
+  renderToday();
+  renderDiary();
+  populateCategorySelect();
+  populateMoodPicker();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- タブ切り替え ---------- */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+}
+
+/* ---------- 予定シート ---------- */
+function populateCategorySelect() {
+  const sel = document.getElementById('ev-category');
+  sel.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+}
+
+function openAddSheet() {
+  closeSheets();
+  if (document.getElementById('page-diary').classList.contains('active')) {
+    openDiarySheet();
+    return;
+  }
+  document.getElementById('event-sheet-title').textContent = '予定を追加';
+  document.getElementById('ev-id').value = '';
+  document.getElementById('ev-title').value = '';
+  document.getElementById('ev-date').value = selectedDayStr || todayStr();
+  document.getElementById('ev-recurrence').value = '繰り返しなし';
+  document.getElementById('ev-delete-btn').style.display = 'none';
+  document.getElementById('event-sheet-backdrop').classList.add('show');
+}
+
+function openEditSheet(id) {
+  const ev = state.events.find(e => e.id === id);
+  if (!ev) return;
+  closeSheets();
+  document.getElementById('event-sheet-title').textContent = '予定を編集';
+  document.getElementById('ev-id').value = ev.id;
+  document.getElementById('ev-title').value = ev.title;
+  document.getElementById('ev-date').value = ev.date;
+  document.getElementById('ev-category').value = ev.categoryName;
+  document.getElementById('ev-recurrence').value = ev.recurrence;
+  document.getElementById('ev-delete-btn').style.display = 'inline-block';
+  document.getElementById('event-sheet-backdrop').classList.add('show');
+}
+
+async function saveEvent() {
+  const id = document.getElementById('ev-id').value || 'ev_' + Date.now();
+  const data = {
+    id,
+    title: document.getElementById('ev-title').value,
+    date: document.getElementById('ev-date').value,
+    categoryName: document.getElementById('ev-category').value,
+    recurrence: document.getElementById('ev-recurrence').value,
+    alarm: 'なし',
+    isCompleted: 'FALSE',
+  };
+  if (!data.title || !data.date) { alert('タイトルと日付を入れてね'); return; }
+  const idx = state.events.findIndex(e => e.id === id);
+  if (idx >= 0) state.events[idx] = data; else state.events.push(data);
+  closeSheets();
+  renderAll();
+  await apiPost('Events', 'upsert', data);
+}
+
+async function deleteEvent() {
+  const id = document.getElementById('ev-id').value;
+  if (!id) return;
+  if (!confirm('この予定を削除する？')) return;
+  state.events = state.events.filter(e => e.id !== id);
+  closeSheets();
+  renderAll();
+  await apiPost('Events', 'delete', { id });
+}
+
+/* ---------- 日記シート ---------- */
+let selectedMood = MOODS[0];
+function populateMoodPicker() {
+  const box = document.getElementById('mood-picker');
+  box.innerHTML = MOODS.map(m =>
+    `<button type="button" class="mood-btn${m===selectedMood?' selected':''}" onclick="pickMood('${m}')">${m}</button>`
+  ).join('');
+}
+function pickMood(m) {
+  selectedMood = m;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('selected', b.textContent === m));
+}
+
+function openDiarySheet() {
+  closeSheets();
+  document.getElementById('di-id').value = '';
+  document.getElementById('di-text').value = '';
+  document.getElementById('di-todaywin').value = '';
+  document.getElementById('di-unfinished').value = '';
+  document.getElementById('di-energy').value = 3;
+  selectedMood = MOODS[0];
+  populateMoodPicker();
+  document.getElementById('diary-sheet-backdrop').classList.add('show');
+}
+
+async function saveDiary() {
+  const now = new Date();
+  const dateStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':00';
+  const data = {
+    id: 'di_' + Date.now(),
+    date: dateStr,
+    mood: selectedMood,
+    moodImage: '',
+    energy: document.getElementById('di-energy').value,
+    text: document.getElementById('di-text').value,
+    todayWin: document.getElementById('di-todaywin').value,
+    unfinishedTasks: document.getElementById('di-unfinished').value,
+    tomorrowOne: '', relationPerson: '', relationThought: '', relationWish: '', relationReflection: '',
+  };
+  state.diary.push(data);
+  closeSheets();
+  renderAll();
+  await apiPost('Diary', 'upsert', data);
+}
+
+/* ---------- 日ごとの詳細シート ---------- */
+function openDaySheet(dateStr, events) {
+  closeSheets();
+  selectedDayStr = dateStr;
+  document.getElementById('day-sheet-title').textContent = dateStr;
+  const content = document.getElementById('day-sheet-content');
+  content.innerHTML = events.length ? events.map(e => `
+    <div class="event-row" style="cursor:pointer;" onclick="openEditSheet('${e.id}')">
+      <div class="cat-chip" style="background:${catColor(e.categoryName)}"></div>
+      <div class="event-title">${escapeHtml(e.title)}</div>
+    </div>
+  `).join('') : '<div class="empty-msg">この日の予定はまだないよ</div>';
+  document.getElementById('day-sheet-backdrop').classList.add('show');
+}
+
+function closeSheets() {
+  document.querySelectorAll('.sheet-backdrop').forEach(s => s.classList.remove('show'));
+}
+document.querySelectorAll('.sheet-backdrop').forEach(b => {
+  b.addEventListener('click', e => { if (e.target === b) closeSheets(); });
+});
+
+document.getElementById('search-input').addEventListener('input', e => renderEventList(e.target.value));
+
+/* ---------- init ---------- */
+(function init() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  loadAll();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
