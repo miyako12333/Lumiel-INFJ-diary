@@ -341,6 +341,22 @@ function catColor(name) {
   return c ? '#' + c.colorHex : '#8E8E93';
 }
 
+/* ---------- 日付の表記ゆれ吸収（スプレッドシートがISO日時に変換することがあるため） ---------- */
+function parseDateParts(value) {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [y, m, d] = value.split('-').map(Number);
+    return { y, m: m - 1, d };
+  }
+  // ISO日時（例: 2026-03-28T15:00:00.000Z）→ JSTのカレンダー日に変換
+  const dt = new Date(value);
+  const jst = new Date(dt.getTime() + 9 * 3600 * 1000);
+  return { y: jst.getUTCFullYear(), m: jst.getUTCMonth(), d: jst.getUTCDate() };
+}
+function toDateOnlyStr(value) {
+  const p = parseDateParts(value);
+  return p.y + '-' + String(p.m + 1).padStart(2, '0') + '-' + String(p.d).padStart(2, '0');
+}
+
 /* ---------- 繰り返し予定を展開して「その月に表示すべき予定」を返す ---------- */
 function expandForMonth(year, month) {
   // month: 0-11
@@ -348,7 +364,9 @@ function expandForMonth(year, month) {
   const first = new Date(year, month, 1);
   const last = new Date(year, month + 1, 0);
   state.events.forEach(ev => {
-    const base = new Date(ev.date + 'T00:00:00');
+    if (!ev.date) return;
+    const p = parseDateParts(ev.date);
+    const base = new Date(p.y, p.m, p.d);
     if (isNaN(base)) return;
     if (ev.recurrence === '繰り返しなし') {
       if (base >= first && base <= last) results.push({ ...ev, occDate: ev.date });
@@ -543,7 +561,7 @@ function openEditSheet(id) {
   document.getElementById('event-sheet-title').textContent = '予定を編集';
   document.getElementById('ev-id').value = ev.id;
   document.getElementById('ev-title').value = ev.title;
-  document.getElementById('ev-date').value = ev.date;
+  document.getElementById('ev-date').value = toDateOnlyStr(ev.date);
   document.getElementById('ev-category').value = ev.categoryName;
   document.getElementById('ev-recurrence').value = ev.recurrence;
   document.getElementById('ev-delete-btn').style.display = 'inline-block';
