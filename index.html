@@ -493,6 +493,23 @@ input:focus,textarea:focus,select:focus{border-color:#9eae91;box-shadow:0 0 0 4p
     <input type="text" id="ev-title" placeholder="例：ループ会">
     <label>日付</label>
     <input type="date" id="ev-date">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <label>開始時間</label>
+        <input type="time" id="ev-start-time">
+      </div>
+      <div>
+        <label>終了時間</label>
+        <input type="time" id="ev-end-time">
+      </div>
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+      <input type="checkbox" id="ev-all-day" style="width:auto;margin:0;">
+      終日予定
+    </label>
+
     <label>カテゴリ</label>
     <select id="ev-category"></select>
     <label>繰り返し</label>
@@ -503,6 +520,28 @@ input:focus,textarea:focus,select:focus{border-color:#9eae91;box-shadow:0 0 0 4p
       <option value="毎月">毎月</option>
       <option value="毎年">毎年</option>
     </select>
+
+    <label>通知</label>
+    <select id="ev-alarm">
+      <option value="なし">通知なし</option>
+      <option value="予定時刻">予定時刻</option>
+      <option value="5分前">5分前</option>
+      <option value="10分前">10分前</option>
+      <option value="30分前">30分前</option>
+      <option value="1時間前">1時間前</option>
+      <option value="前日">前日</option>
+    </select>
+
+    <label>場所</label>
+    <input type="text" id="ev-location" placeholder="例：〇〇美容室">
+
+    <label>メモ</label>
+    <textarea id="ev-notes" rows="3" placeholder="予定についてのメモ"></textarea>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+      <input type="checkbox" id="ev-sync-calendar" checked style="width:auto;margin:0;">
+      Googleカレンダーに同期
+    </label>
     <div class="btn-row">
       <button class="btn ghost" id="ev-delete-btn" onclick="deleteEvent()" style="display:none;">削除</button>
       <button class="btn ghost" onclick="closeSheets()">キャンセル</button>
@@ -808,7 +847,14 @@ function openAddSheet() {
   document.getElementById('ev-id').value = '';
   document.getElementById('ev-title').value = '';
   document.getElementById('ev-date').value = selectedDayStr || todayStr();
+  document.getElementById('ev-start-time').value = '';
+  document.getElementById('ev-end-time').value = '';
+  document.getElementById('ev-all-day').checked = true;
   document.getElementById('ev-recurrence').value = '繰り返しなし';
+  document.getElementById('ev-alarm').value = 'なし';
+  document.getElementById('ev-location').value = '';
+  document.getElementById('ev-notes').value = '';
+  document.getElementById('ev-sync-calendar').checked = true;
   document.getElementById('ev-delete-btn').style.display = 'none';
   document.getElementById('event-sheet-backdrop').classList.add('show');
 }
@@ -821,8 +867,15 @@ function openEditSheet(id) {
   document.getElementById('ev-id').value = ev.id;
   document.getElementById('ev-title').value = ev.title;
   document.getElementById('ev-date').value = toDateOnlyStr(ev.date);
+  document.getElementById('ev-start-time').value = ev.startTime || '';
+  document.getElementById('ev-end-time').value = ev.endTime || '';
+  document.getElementById('ev-all-day').checked = String(ev.allDay).toUpperCase() === 'TRUE' || ev.allDay === true;
   document.getElementById('ev-category').value = ev.categoryName;
-  document.getElementById('ev-recurrence').value = ev.recurrence;
+  document.getElementById('ev-recurrence').value = ev.recurrence || '繰り返しなし';
+  document.getElementById('ev-alarm').value = ev.alarm || 'なし';
+  document.getElementById('ev-location').value = ev.location || '';
+  document.getElementById('ev-notes').value = ev.notes || '';
+  document.getElementById('ev-sync-calendar').checked = String(ev.syncCalendar).toUpperCase() !== 'FALSE';
   document.getElementById('ev-delete-btn').style.display = 'inline-block';
   document.getElementById('event-sheet-backdrop').classList.add('show');
 }
@@ -833,9 +886,16 @@ async function saveEvent() {
     id,
     title: document.getElementById('ev-title').value,
     date: document.getElementById('ev-date').value,
+    startTime: document.getElementById('ev-start-time').value,
+    endTime: document.getElementById('ev-end-time').value,
+    allDay: document.getElementById('ev-all-day').checked ? 'TRUE' : 'FALSE',
     categoryName: document.getElementById('ev-category').value,
     recurrence: document.getElementById('ev-recurrence').value,
-    alarm: 'なし',
+    alarm: document.getElementById('ev-alarm').value,
+    location: document.getElementById('ev-location').value,
+    notes: document.getElementById('ev-notes').value,
+    syncCalendar: document.getElementById('ev-sync-calendar').checked ? 'TRUE' : 'FALSE',
+    googleEventId: (state.events.find(e => e.id === id) || {}).googleEventId || '',
     isCompleted: 'FALSE',
   };
   if (!data.title || !data.date) { alert('タイトルと日付を入れてね'); return; }
