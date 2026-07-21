@@ -35,7 +35,7 @@ main{width:min(100%,560px);margin:auto;padding:4px 12px 0}
 .cal-head .ym{text-align:center;font-family:'Kaisei Decol',serif;font-size:1.12rem;letter-spacing:.03em}
 .cal-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
 .cal-dow{text-align:center;padding-bottom:5px;color:var(--muted);font-size:.66rem}.cal-dow:first-child{color:#c87872}.cal-dow:nth-child(7){color:#7389a4}
-.cal-cell{position:relative;min-height:70px;display:flex;flex-direction:column;align-items:stretch;padding:5px 3px 4px;border:1px solid transparent;border-radius:10px;background:#f8f4ee;color:var(--ink);font-size:.72rem;cursor:pointer;overflow:hidden}.cal-daynum{text-align:center;font-weight:500;line-height:1.2;margin-bottom:3px}.cal-event-label{display:block;width:100%;min-width:0;margin-top:2px;padding:2px 3px 2px 5px;border-radius:5px;background:rgba(255,255,255,.82);font-size:.56rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;border-left:3px solid var(--event-color,#999)}.cal-more{text-align:center;color:var(--muted);font-size:.52rem;line-height:1.1;margin-top:2px}
+.cal-cell{position:relative;min-height:112px;display:flex;flex-direction:column;align-items:stretch;padding:5px 3px 4px;border:1px solid transparent;border-radius:10px;background:#f8f4ee;color:var(--ink);font-size:.72rem;cursor:pointer;overflow:hidden}.cal-daynum{text-align:center;font-weight:500;line-height:1.2;margin-bottom:3px}.cal-event-label{display:block;width:100%;min-width:0;margin-top:2px;padding:2px 3px 2px 5px;border-radius:5px;background:rgba(255,255,255,.82);font-size:.54rem;line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;border-left:3px solid var(--event-color,#999)}.cal-more{text-align:center;color:var(--muted);font-size:.52rem;line-height:1.1;margin-top:2px}
 .cal-cell.today{background:#fff7f3;border-color:var(--accent);color:var(--accent-strong);box-shadow:0 3px 10px rgba(185,104,82,.12)}.cal-cell.today .cal-daynum{font-weight:700}
 .cal-cell.empty{background:transparent;cursor:default}.dot{width:6px;height:6px;border-radius:50%}
 .cat-legend{position:relative;z-index:1;display:flex;gap:7px 10px;flex-wrap:wrap;margin-top:13px;padding-top:11px;border-top:1px dashed var(--line);color:var(--muted);font-size:.64rem}.cat-legend span{display:inline-flex;align-items:center;gap:4px}
@@ -51,7 +51,7 @@ nav.tabbar button{min-height:54px;border:0;border-radius:15px;background:transpa
 .empty-msg{padding:24px 4px;text-align:center;color:var(--muted);font-size:.82rem;line-height:1.7}.loading{padding:38px 0;text-align:center;color:var(--muted);font-size:.82rem}
 #today-card h2{font-size:1.15rem!important;margin:0 0 8px!important}#diary-list>div{padding:13px 0!important;line-height:1.7}
 @media(min-width:700px){header{padding-top:34px}main{padding-inline:18px}.fluffy{padding:22px}.sheet{width:min(100%,560px);margin:auto}.fab{right:max(22px,calc((100vw - 560px)/2 + 18px))}nav.tabbar{left:50%;right:auto;width:520px;transform:translateX(-50%);bottom:12px;border:1px solid var(--line);border-radius:20px;padding:7px}}
-@media(max-width:390px){header{padding-inline:14px}main{padding-inline:7px}.fluffy{padding:14px 9px}.cal-head{grid-template-columns:38px 1fr 38px;margin-bottom:9px}.cal-head button{width:36px;height:36px}.cal-grid{gap:2px}.cal-cell{min-height:64px;padding:4px 2px;border-radius:8px}.cal-event-label{font-size:.52rem;padding:2px 2px 2px 4px;border-left-width:2px}.cat-legend{font-size:.6rem;gap:6px 8px}.event-date{display:none}.fab{right:12px}}@media(max-width:340px){.cal-cell{min-height:59px}.cal-event-label{font-size:.48rem}.fluffy{padding-inline:7px}}
+@media(max-width:390px){header{padding-inline:14px}main{padding-inline:7px}.fluffy{padding:14px 9px}.cal-head{grid-template-columns:38px 1fr 38px;margin-bottom:9px}.cal-head button{width:36px;height:36px}.cal-grid{gap:2px}.cal-cell{min-height:102px;padding:4px 2px;border-radius:8px}.cal-event-label{font-size:.49rem;line-height:1.12;padding:2px 2px 2px 4px;border-left-width:2px}.cat-legend{font-size:.6rem;gap:6px 8px}.event-date{display:none}.fab{right:12px}}@media(max-width:340px){.cal-cell{min-height:96px}.cal-event-label{font-size:.45rem}.fluffy{padding-inline:7px}}
 </style>
 </head>
 <body>
@@ -309,7 +309,7 @@ function renderCalendar() {
     el.appendChild(dayNum);
 
     const dayEvents = byDay[dateStr] || [];
-    dayEvents.slice(0, 2).forEach(e => {
+    dayEvents.slice(0, 5).forEach(e => {
       const label = document.createElement('div');
       label.className = 'cal-event-label';
       label.style.setProperty('--event-color', catColor(e.categoryName));
@@ -317,10 +317,10 @@ function renderCalendar() {
       label.title = e.title;
       el.appendChild(label);
     });
-    if (dayEvents.length > 2) {
+    if (dayEvents.length > 5) {
       const more = document.createElement('div');
       more.className = 'cal-more';
-      more.textContent = `ほか${dayEvents.length - 2}件`;
+      more.textContent = `ほか${dayEvents.length - 5}件`;
       el.appendChild(more);
     }
     el.onclick = () => openDaySheet(dateStr, dayEvents);
