@@ -14,24 +14,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap');
 
 :root{
-  --bg:#faf8f4;
-  --paper:#fffefa;
+  --bg:#f8f6f2;
+  --paper:#ffffff;
   --paper-2:#f6f2eb;
   --ink:#2f2d29;
   --muted:#817b72;
   --line:#e8e1d7;
   --line-strong:#d9d0c3;
-  --sage:#8f9f7d;
-  --sage-dark:#6f8062;
+  --sage:#8e9b78;
+  --sage-dark:#748163;
   --sage-soft:#e8ede3;
   --rose:#d88e91;
   --peach:#e9b18f;
   --lavender:#a294bd;
-  --accent:#80936f;
+  --accent:#8e9b78;
   --danger:#b9655d;
-  --radius-xl:28px;
-  --radius-lg:22px;
-  --radius-md:15px;
+  --today-bg:#fff8f2;
+  --today-border:#c27b61;
+  --radius-xl:24px;
+  --radius-lg:20px;
+  --radius-md:14px;
   --shadow-soft:0 18px 50px rgba(91,78,61,.09);
   --shadow-card:0 8px 24px rgba(82,70,53,.07);
   font-size:16px;
@@ -63,45 +65,32 @@ button{touch-action:manipulation}
 header{
   max-width:760px;
   margin:0 auto;
-  padding:calc(22px + env(safe-area-inset-top)) 18px 10px;
+  padding:calc(11px + env(safe-area-inset-top)) 18px 6px;
   position:relative;
 }
 .brand-row{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
 .brand-copy{min-width:0}
-.washi{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:6px 12px;
-  border-radius:999px;
-  background:#f5e4dc;
-  color:#a55f4c;
-  font-family:'Klee One',cursive;
-  font-size:.72rem;
-  letter-spacing:.08em;
-  box-shadow:inset 0 0 0 1px rgba(181,108,83,.08);
-}
-.washi::before{content:"✦";font-size:.65rem}
 header h1{
-  margin:12px 0 0;
+  margin:0;
   font-family:'Newsreader',serif;
-  font-size:clamp(2rem,8vw,3rem);
-  line-height:.92;
-  letter-spacing:-.025em;
+  font-size:clamp(1.6rem,7vw,2.1rem);
+  line-height:1.1;
+  letter-spacing:-.02em;
   font-weight:600;
 }
-header .tagline{
-  margin:9px 0 0;
+.header-ym{
+  margin:2px 0 0;
   color:var(--muted);
-  font-family:'Klee One',cursive;
-  font-size:.78rem;
+  font-family:'Newsreader','Noto Sans JP',serif;
+  font-size:.92rem;
+  font-weight:500;
 }
 #sync-status{
   display:inline-flex;
   align-items:center;
-  margin:7px 0 0;
+  margin:4px 0 0;
   color:var(--muted);
-  font-size:.67rem;
+  font-size:.62rem;
 }
 .brand-leaf{
   width:72px;height:88px;flex:0 0 auto;opacity:.7;
@@ -171,7 +160,7 @@ main{max-width:760px;margin:0 auto;padding:6px 14px 30px}
 .cal-dow:nth-child(7){color:#7288a5}
 .cal-cell{
   min-width:0;
-  min-height:118px;
+  min-height:176px;
   display:flex;
   flex-direction:column;
   align-items:stretch;
@@ -186,40 +175,51 @@ main{max-width:760px;margin:0 auto;padding:6px 14px 30px}
 .cal-cell:active{transform:scale(.98);background:#f2eee7}
 .cal-cell.empty{background:transparent;cursor:default}
 .cal-cell.today{
-  border-color:#b96b55;
-  background:#fff7f3;
-  box-shadow:inset 0 0 0 1px rgba(185,107,85,.12);
+  border-color:var(--today-border);
+  background:var(--today-bg);
+  box-shadow:0 4px 14px rgba(194,123,97,.18), inset 0 0 0 1px rgba(194,123,97,.14);
+}
+.cal-daynum-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  margin-bottom:4px;
 }
 .cal-daynum{
   text-align:center;
-  font-size:.72rem;
+  font-size:.9rem;
   font-weight:600;
   line-height:1.2;
-  margin-bottom:4px;
 }
-.cal-cell.today .cal-daynum{color:#a7523d}
+.cal-mood-emoji{font-size:.78rem;line-height:1}
+.cal-cell.today .cal-daynum{color:var(--today-border)}
 .cal-event-label{
-  display:block;
+  display:flex;
+  align-items:baseline;
+  gap:3px;
   width:100%;
   min-width:0;
   margin-top:2px;
-  padding:2px 3px 2px 5px;
+  padding:2px 4px 2px 5px;
   border-radius:5px;
   border-left:3px solid var(--event-color,#999);
   background:rgba(255,255,255,.9);
-  font-size:.51rem;
-  line-height:1.2;
+  font-size:.82rem;
+  line-height:1.25;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   text-align:left;
   box-shadow:0 1px 2px rgba(70,60,48,.03);
 }
+.cal-event-label .ev-time{font-size:.70rem;color:var(--muted);flex:0 0 auto}
+.cal-event-label .ev-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cal-more{
   margin-top:2px;
   text-align:center;
   color:var(--muted);
-  font-size:.49rem;
+  font-size:.62rem;
   line-height:1.1;
 }
 .cat-legend{
@@ -264,17 +264,9 @@ main{max-width:760px;margin:0 auto;padding:6px 14px 30px}
 
 /* today / diary content */
 #today-card h2{
-  margin:0 0 14px!important;
+  margin:0 0 4px!important;
   font-family:'Newsreader','Noto Sans JP',serif!important;
-  font-size:1.45rem;
-}
-#today-card::before{
-  content:"今日も、あなたらしい一日を。";
-  display:block;
-  margin-bottom:7px;
-  color:var(--sage-dark);
-  font-family:'Klee One',cursive;
-  font-size:.78rem;
+  font-size:1.3rem;
 }
 #diary-list>div{
   padding:14px 2px!important;
@@ -320,6 +312,49 @@ nav.tabbar button.active{
   color:#647558;
   font-weight:700;
 }
+.fab-menu{
+  position:fixed;
+  right:max(18px,calc((100vw - 760px)/2 + 20px));
+  bottom:calc(154px + env(safe-area-inset-bottom));
+  z-index:21;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(8px);
+  transition:.2s ease;
+}
+.fab-menu.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.fab-menu button{
+  border:0;
+  border-radius:999px;
+  padding:11px 18px;
+  background:#fff;
+  color:var(--ink);
+  font-size:.8rem;
+  font-weight:600;
+  box-shadow:0 10px 26px rgba(66,55,42,.16);
+  white-space:nowrap;
+}
+.fab-menu button:active{transform:scale(.96)}
+@keyframes cardGlow{
+  0%{box-shadow:var(--shadow-card)}
+  35%{box-shadow:0 0 0 5px rgba(142,155,120,.28), var(--shadow-card)}
+  100%{box-shadow:var(--shadow-card)}
+}
+.fluffy.glow{animation:cardGlow .9s ease}
+.mood-quick-row{display:flex;justify-content:space-between;gap:6px;margin-top:6px}
+.mood-quick-row button{
+  flex:1;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:16px;
+  padding:14px 0;
+  font-size:1.4rem;
+}
+.mood-quick-row button:active{transform:scale(.94);background:var(--sage-soft)}
 .fab{
   position:fixed;
   right:max(18px,calc((100vw - 760px)/2 + 20px));
@@ -404,26 +439,25 @@ input:focus,textarea:focus,select:focus{border-color:#9eae91;box-shadow:0 0 0 4p
 
 @media(max-width:600px){
   header{padding-left:16px;padding-right:16px}
-  .brand-leaf{width:58px;height:72px}
-  main{padding-left:7px;padding-right:7px}
-  .fluffy{padding:14px 8px;border-radius:23px}
-  .fluffy::after{border-radius:18px}
+  main{padding-left:6px;padding-right:6px}
+  .fluffy{padding:12px 6px;border-radius:20px}
+  .fluffy::after{border-radius:16px}
   .cal-head{grid-template-columns:38px 1fr 38px;margin:1px 4px 10px}
   .cal-head button{width:36px;height:36px;border-radius:12px}
   .cal-head .ym{font-size:1.2rem}
   .cal-grid{gap:2px}
-  .cal-cell{min-height:104px;padding:4px 2px;border-radius:9px}
-  .cal-event-label{font-size:.46rem;line-height:1.12;padding:2px 2px 2px 4px;border-left-width:2px}
-  .cal-daynum{font-size:.67rem;margin-bottom:2px}
+  .cal-cell{min-height:172px;padding:4px 2px;border-radius:9px}
+  .cal-event-label{font-size:.74rem;line-height:1.2;padding:2px 2px 2px 4px;border-left-width:2px}
+  .cal-event-label .ev-time{font-size:.62rem}
+  .cal-daynum{font-size:.84rem}
   .cat-legend{font-size:.59rem;gap:6px 8px;margin-inline:4px}
   .event-date{display:none}
   .fab{right:13px}
 }
 @media(max-width:350px){
-  header h1{font-size:1.85rem}
-  .brand-leaf{display:none}
-  .cal-cell{min-height:99px}
-  .cal-event-label{font-size:.43rem}
+  header h1{font-size:1.5rem}
+  .cal-cell{min-height:160px}
+  .cal-event-label{font-size:.68rem}
 }
 @media(min-width:900px){
   header,main{max-width:900px}
@@ -640,18 +674,16 @@ button:active,.cal-cell:active,.mood-btn:active,.btn:active,.fab:active,.tab-btn
 <header>
   <div class="brand-row">
     <div class="brand-copy">
-      <div class="washi">こころ、記録する</div>
-      <h1>Lumiel</h1>
-      <p class="tagline">あなたの心が帰ってくる場所</p>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <p id="sync-status" style="margin:7px 0 0;">読み込み中…</p>
+      <h1>🌿 Lumiel</h1>
+      <p class="header-ym" id="header-ym"></p>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <p id="sync-status" style="margin:4px 0 0;">読み込み中…</p>
         <button type="button" id="manual-sync-btn" onclick="manualSync()" style="
-          margin-top:7px;border:1px solid var(--line);background:#fff;
-          color:var(--sage-dark);border-radius:999px;padding:6px 10px;
-          font-size:.65rem;cursor:pointer;">↻ 同期</button>
+          margin-top:4px;border:1px solid var(--line);background:#fff;
+          color:var(--sage-dark);border-radius:999px;padding:4px 9px;
+          font-size:.6rem;cursor:pointer;">↻</button>
       </div>
     </div>
-    <div class="brand-leaf" aria-hidden="true"></div>
   </div>
 </header>
 
@@ -677,13 +709,6 @@ button:active,.cal-cell:active,.mood-btn:active,.btn:active,.fab:active,.tab-btn
       <div class="cal-grid" id="cal-grid"></div>
       <div class="week-view" id="week-view"></div>
       <div class="cat-legend" id="cat-legend"></div>
-      <div class="heatmap-wrap">
-        <div class="heatmap-head">
-          <div class="heatmap-title">こころの記録</div>
-          <div class="heatmap-summary" id="heatmap-summary">記録を集計中…</div>
-        </div>
-        <div class="heatmap-grid" id="mood-heatmap"></div>
-      </div>
       </div>
     </div>
 
@@ -704,7 +729,12 @@ button:active,.cal-cell:active,.mood-btn:active,.btn:active,.fab:active,.tab-btn
   </section>
 </main>
 
-<button class="fab" id="fab" aria-label="追加" onclick="openAddSheet()">＋</button>
+<div class="fab-menu" id="fab-menu">
+  <button type="button" onclick="fabAction('event')">📅 予定追加</button>
+  <button type="button" onclick="fabAction('diary')">📖 日記を書く</button>
+  <button type="button" onclick="fabAction('mood')">😊 気持ちだけ記録</button>
+</div>
+<button class="fab" id="fab" aria-label="追加" onclick="toggleFabMenu()">＋</button>
 
 <nav class="tabbar" aria-label="メインメニュー">
   <button class="tab-btn" data-page="today" onclick="showPage('today')"><span class="icon">☀︎</span>今日</button>
@@ -826,6 +856,21 @@ button:active,.cal-cell:active,.mood-btn:active,.btn:active,.fab:active,.tab-btn
     <div id="day-sheet-content"></div>
     <div class="btn-row">
       <button class="btn" onclick="openAddSheet()">＋ 予定を追加</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="mood-quick-backdrop">
+  <div class="sheet">
+    <button class="sheet-close" aria-label="閉じる" onclick="closeSheets()"></button>
+    <h2>😊 今の気持ちは？</h2>
+    <div class="mood-quick-row">
+      <button type="button" onclick="saveQuickMood('元気')">😊</button>
+      <button type="button" onclick="saveQuickMood('穏やか')">😌</button>
+      <button type="button" onclick="saveQuickMood('ふあん')">😟</button>
+      <button type="button" onclick="saveQuickMood('つかれた')">😴</button>
+      <button type="button" onclick="saveQuickMood('かなしい')">😢</button>
+      <button type="button" onclick="saveQuickMood('いらいら')">😡</button>
     </div>
   </div>
 </div>
@@ -1002,6 +1047,9 @@ function fmtDate(d) {
 /* ---------- カレンダー描画 ---------- */
 function renderCalendar() {
   document.getElementById('cal-ym').textContent = `${calYear}年 ${calMonth+1}月`;
+  const headerYm = document.getElementById('header-ym');
+  if (headerYm) headerYm.textContent = `${calYear}年${calMonth+1}月`;
+
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
   ['日','月','火','水','木','金','土'].forEach(d => {
@@ -1015,6 +1063,9 @@ function renderCalendar() {
   const monthEvents = expandForMonth(calYear, calMonth);
   const byDay = {};
   monthEvents.forEach(e => { (byDay[e.occDate] = byDay[e.occDate] || []).push(e); });
+  Object.keys(byDay).forEach(k => {
+    byDay[k].sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
+  });
 
   for (let i = 0; i < startOffset; i++) {
     const el = document.createElement('div'); el.className = 'cal-cell empty';
@@ -1024,24 +1075,26 @@ function renderCalendar() {
     const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const el = document.createElement('div');
     el.className = 'cal-cell' + (dateStr === todayStr() ? ' today' : '');
-    const dayNum = document.createElement('div');
-    dayNum.className = 'cal-daynum';
-    dayNum.textContent = d;
-    el.appendChild(dayNum);
+
+    const dayRow = document.createElement('div');
+    dayRow.className = 'cal-daynum-row';
+    const mood = moodEmojiForDate_(dateStr);
+    dayRow.innerHTML = `<span class="cal-daynum">${d}</span>${mood ? `<span class="cal-mood-emoji">${mood}</span>` : ''}`;
+    el.appendChild(dayRow);
 
     const dayEvents = byDay[dateStr] || [];
     dayEvents.slice(0, 5).forEach(e => {
       const label = document.createElement('div');
       label.className = 'cal-event-label';
       label.style.setProperty('--event-color', catColor(e.categoryName));
-      label.textContent = e.title;
       label.title = e.title;
+      label.innerHTML = `<span class="ev-time">${catIcon(e.categoryName)}${e.startTime ? ' ' + escapeHtml(e.startTime) : ''}</span><span class="ev-title">${escapeHtml(e.title)}</span>`;
       el.appendChild(label);
     });
     if (dayEvents.length > 5) {
       const more = document.createElement('div');
       more.className = 'cal-more';
-      more.textContent = `ほか${dayEvents.length - 5}件`;
+      more.textContent = `＋${dayEvents.length - 5}件`;
       el.appendChild(more);
     }
     el.onclick = () => openDaySheet(dateStr, dayEvents);
@@ -1050,7 +1103,7 @@ function renderCalendar() {
 
   const legend = document.getElementById('cat-legend');
   legend.innerHTML = state.categories.map(c =>
-    `<span><span class="dot" style="background:#${c.colorHex}"></span>${c.name}</span>`
+    `<span><span class="dot" style="background:#${c.colorHex}"></span>${catIcon(c.name)} ${c.name}</span>`
   ).join('');
 }
 
@@ -1067,7 +1120,6 @@ function changeMonth(delta) {
     if (calMonth > 11) { calMonth = 0; calYear++; }
     renderCalendar();
     renderWeekView();
-    renderMoodHeatmap();
 
     if (shell) {
       shell.classList.remove(leave);
@@ -1208,81 +1260,56 @@ function renderGlobalSearch(query) {
     : '<div class="empty-msg">見つかりませんでした</div>';
 }
 
-/* ---------- 感情ヒートマップ ---------- */
+/* ---------- 気分の絵文字マッピング（日付セル・今日カードで使用） ---------- */
 function diaryDateKey_(value) {
   try { return toDateOnlyStr(value); } catch(e) { return String(value || '').slice(0,10); }
 }
-
-function moodScore_(mood) {
-  const map = {
-    '元気': 5,
-    '穏やか': 4,
-    'ふあん': 3,
-    'つかれた': 2,
-    'かなしい': 1,
-    'いらいら': 1
-  };
-  return map[mood] || 0;
+const MOOD_EMOJI = {
+  '元気': '😊',
+  '穏やか': '😌',
+  'ふあん': '😟',
+  'つかれた': '😴',
+  'かなしい': '😢',
+  'いらいら': '😡',
+};
+function moodEmojiForDate_(dateStr) {
+  const hit = state.diary.find(d => diaryDateKey_(d.date) === dateStr);
+  return hit ? (MOOD_EMOJI[hit.mood] || '') : '';
 }
 
-function heatColor_(score) {
-  const colors = {
-    0:'#f3f0eb',
-    1:'#ead3d7',
-    2:'#e5d9c9',
-    3:'#d9d6e7',
-    4:'#dbe4d4',
-    5:'#b8c8ad'
-  };
-  return colors[score] || colors[0];
-}
-
-function renderMoodHeatmap() {
-  const grid = document.getElementById('mood-heatmap');
-  const summary = document.getElementById('heatmap-summary');
-  if (!grid || !summary) return;
-
-  const days = new Date(calYear, calMonth+1, 0).getDate();
-  const moodByDay = {};
-  state.diary.forEach(d => {
-    const key = diaryDateKey_(d.date);
-    const p = parseDateParts(key);
-    if (p.y === calYear && p.m === calMonth) {
-      moodByDay[p.d] = moodScore_(d.mood);
-    }
-  });
-
-  const firstOffset = new Date(calYear, calMonth, 1).getDay();
-  const cells = [];
-  for (let i=0;i<firstOffset;i++) cells.push('<div></div>');
-
-  let recorded = 0;
-  let scoreTotal = 0;
-  for (let day=1;day<=days;day++) {
-    const score = moodByDay[day] || 0;
-    if (score) { recorded++; scoreTotal += score; }
-    cells.push(`<div class="heat-cell" title="${day}日" style="background:${heatColor_(score)}"><span>${day}</span></div>`);
-  }
-  grid.innerHTML = cells.join('');
-
-  if (!recorded) {
-    summary.textContent = '今月の記録はまだありません';
-  } else {
-    const avg = scoreTotal / recorded;
-    const message = avg >= 4.2 ? '穏やかな日が多い月です'
-      : avg >= 3.2 ? '気持ちに波がありながらも整っています'
-      : avg >= 2.2 ? '少し疲れがたまっているようです'
-      : '無理をせず休息を大切に';
-    summary.textContent = `${recorded}日記録 ・ ${message}`;
-  }
+/* ---------- カテゴリごとのアイコン ---------- */
+const CATEGORY_ICONS = {
+  'ループ': '🔁',
+  '誕生日': '🎂',
+  '霊的': '🙏',
+  '趣味': '🎨',
+  '命日': '🕯️',
+  'お金': '💰',
+  '仕事': '💼',
+  'おでん': '🍢',
+  '美容': '💄',
+  'その他': '🟢',
+};
+function catIcon(name) {
+  return CATEGORY_ICONS[name] || '🟢';
 }
 
 /* ---------- 保存演出 ---------- */
 function showSaveFeedback(message='保存しました') {
   const toast = document.getElementById('save-toast');
   if (!toast) return;
-  toast.textContent = message;
+  toast.textContent = '✓ ' + message;
   toast.classList.add('show');
+
+  const activePage = document.querySelector('.page.active');
+  if (activePage) {
+    const card = activePage.querySelector('.fluffy');
+    if (card) {
+      card.classList.remove('glow');
+      void card.offsetWidth; // reflow to restart animation
+      card.classList.add('glow');
+    }
+  }
 
   const splash = document.createElement('div');
   splash.className = 'ink-splash';
@@ -1316,15 +1343,22 @@ function renderEventList(filter = '') {
 /* ---------- 今日タブ ---------- */
 function renderToday() {
   const t = todayStr();
-  const todays = expandForMonth(calYear, calMonth).filter(e => e.occDate === t);
+  const todays = expandForMonth(calYear, calMonth)
+    .filter(e => e.occDate === t)
+    .sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
   const card = document.getElementById('today-card');
+  const shown = todays.slice(0, 5);
+  const overflow = todays.length - shown.length;
   card.innerHTML = `
-    <h2 style="font-family:'Kaisei Decol',serif;margin-top:0;">${t}</h2>
-    ${todays.length ? todays.map(e => `
+    <h2>🌿 おかえりなさい</h2>
+    <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">今日は${todays.length}件予定があります。</div>
+    <div style="border-top:1px dashed var(--line);margin-bottom:6px;"></div>
+    ${shown.length ? shown.map(e => `
       <div class="event-row">
         <div class="cat-chip" style="background:${catColor(e.categoryName)}"></div>
-        <div class="event-title">${escapeHtml(e.title)}</div>
+        <div class="event-title">${catIcon(e.categoryName)} ${e.startTime ? escapeHtml(e.startTime) + ' ' : ''}${escapeHtml(e.title)}</div>
       </div>`).join('') : '<div class="empty-msg">今日の予定はないよ</div>'}
+    ${overflow > 0 ? `<div class="cal-more" style="text-align:left;padding:6px 5px;">＋${overflow}件</div>` : ''}
   `;
 }
 
@@ -1351,7 +1385,6 @@ function renderAll() {
   renderToday();
   renderDiary();
   renderWeekView();
-  renderMoodHeatmap();
   setCalendarView(calendarView);
   populateCategorySelect();
   populateMoodPicker();
@@ -1372,6 +1405,45 @@ function showPage(name) {
 function populateCategorySelect() {
   const sel = document.getElementById('ev-category');
   sel.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+}
+
+/* ---------- FABメニュー ---------- */
+function toggleFabMenu() {
+  document.getElementById('fab-menu').classList.toggle('show');
+}
+function closeFabMenu() {
+  document.getElementById('fab-menu').classList.remove('show');
+}
+function fabAction(kind) {
+  closeFabMenu();
+  if (kind === 'event') openAddSheet();
+  else if (kind === 'diary') openDiarySheet();
+  else if (kind === 'mood') openMoodQuick();
+}
+
+/* ---------- 気持ちだけ記録（クイック） ---------- */
+function openMoodQuick() {
+  const backdrop = document.getElementById('mood-quick-backdrop');
+  if (backdrop) backdrop.classList.add('show');
+}
+async function saveQuickMood(mood) {
+  closeSheets();
+  const now = new Date();
+  const dateStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':00';
+  const data = {
+    id: 'di_' + Date.now(),
+    date: dateStr,
+    mood, moodImage: '', energy: 3, text: '', todayWin: '', unfinishedTasks: '',
+    tomorrowOne: '', relationPerson: '', relationThought: '', relationWish: '', relationReflection: '',
+  };
+  state.diary.push(data);
+  renderAll();
+  try {
+    await apiPost('Diary', 'upsert', data);
+    showSaveFeedback('気持ちを記録しました');
+  } catch (err) {
+    alert('保存できませんでした：' + err.message);
+  }
 }
 
 function openAddSheet() {
