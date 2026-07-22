@@ -193,6 +193,7 @@ main{max-width:760px;margin:0 auto;padding:6px 14px 30px}
   line-height:1.2;
 }
 .cal-mood-emoji{font-size:.78rem;line-height:1}
+.cal-events-box{display:flex;flex-direction:column;gap:2px;flex:1;min-height:0;overflow:hidden}
 .cal-cell.today .cal-daynum{color:var(--today-border)}
 .cal-event-label{
   display:flex;
@@ -446,9 +447,20 @@ input:focus,textarea:focus,select:focus{border-color:#9eae91;box-shadow:0 0 0 4p
   .cal-head button{width:36px;height:36px;border-radius:12px}
   .cal-head .ym{font-size:1.2rem}
   .cal-grid{gap:2px}
-  .cal-cell{min-height:172px;padding:4px 2px;border-radius:9px}
-  .cal-event-label{font-size:.74rem;line-height:1.2;padding:2px 2px 2px 4px;border-left-width:2px}
-  .cal-event-label .ev-time{font-size:.62rem}
+  .cal-cell{min-height:104px;padding:4px 2px;border-radius:9px}
+  .cal-events-box{flex-direction:row;flex-wrap:wrap;gap:3px;align-content:flex-start;justify-content:center}
+  .cal-event-label{
+    display:inline-flex;
+    width:auto;
+    flex:0 0 auto;
+    margin:0;
+    padding:2px 5px;
+    border-radius:8px;
+    font-size:.68rem;
+  }
+  .cal-event-label .ev-title{display:none}
+  .cal-event-label .ev-time{font-size:.68rem}
+  .cal-more{flex:0 0 100%;text-align:center}
   .cal-daynum{font-size:.84rem}
   .cat-legend{font-size:.59rem;gap:6px 8px;margin-inline:4px}
   .event-date{display:none}
@@ -456,8 +468,7 @@ input:focus,textarea:focus,select:focus{border-color:#9eae91;box-shadow:0 0 0 4p
 }
 @media(max-width:350px){
   header h1{font-size:1.5rem}
-  .cal-cell{min-height:160px}
-  .cal-event-label{font-size:.68rem}
+  .cal-cell{min-height:96px}
 }
 @media(min-width:900px){
   header,main{max-width:900px}
@@ -1082,6 +1093,10 @@ function renderCalendar() {
     dayRow.innerHTML = `<span class="cal-daynum">${d}</span>${mood ? `<span class="cal-mood-emoji">${mood}</span>` : ''}`;
     el.appendChild(dayRow);
 
+    const eventsBox = document.createElement('div');
+    eventsBox.className = 'cal-events-box';
+    el.appendChild(eventsBox);
+
     const dayEvents = byDay[dateStr] || [];
     dayEvents.slice(0, 5).forEach(e => {
       const label = document.createElement('div');
@@ -1089,13 +1104,13 @@ function renderCalendar() {
       label.style.setProperty('--event-color', catColor(e.categoryName));
       label.title = e.title;
       label.innerHTML = `<span class="ev-time">${catIcon(e.categoryName)}${e.startTime ? ' ' + escapeHtml(e.startTime) : ''}</span><span class="ev-title">${escapeHtml(e.title)}</span>`;
-      el.appendChild(label);
+      eventsBox.appendChild(label);
     });
     if (dayEvents.length > 5) {
       const more = document.createElement('div');
       more.className = 'cal-more';
       more.textContent = `＋${dayEvents.length - 5}件`;
-      el.appendChild(more);
+      eventsBox.appendChild(more);
     }
     el.onclick = () => openDaySheet(dateStr, dayEvents);
     grid.appendChild(el);
